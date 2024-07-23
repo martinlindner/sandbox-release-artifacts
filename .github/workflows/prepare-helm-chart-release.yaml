@@ -21,7 +21,7 @@ jobs:
         run: zip -r /tmp/source_code.zip . -x ".git/*"
 
       - name: Create .tar.gz archive
-        run: tar -czvf /tmp/source_code.tar.gz . --exclude='.git'
+        run: tar --exclude='.git' -czvf /tmp/source_code.tar.gz . 
 
       - name: Dump GitHub context
         env:

@@ -1,0 +1,13 @@
+name: 'Print inputs summary'
+description: 'Print a summary of the inputs passed to the parent action'
+
+runs:
+  using: "composite"
+  steps:
+    - name: print inputs summary
+      shell: bash
+      run: |
+        echo "#### Inputs:" >> $GITHUB_STEP_SUMMARY
+        echo '```yaml' >> $GITHUB_STEP_SUMMARY
+        echo '${{ toJson(github.event.inputs) }}' | yq '.. style="double"' -p json -o yaml >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,86 @@
+# Notify project Slack channel of workflow status
+name: 'Notify Slack of Workflow status'
+description: 'Send notification to Slack channel with Workflow status'
+inputs:
+  status:
+    description: 'Workflow status, either: "success" or "failure"'
+    required: true
+  slack_channel_id:
+    description: 'Slack channel ID'
+    required: true
+  slack_bot_token:
+    description: 'Slack bot token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - id: timestamp
+      if: inputs.status == 'success' || inputs.status == 'failure'
+      shell: bash
+      run: |
+        echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+
+    - uses: slackapi/slack-github-action@v1
+      if: inputs.status == 'success' || inputs.status == 'failure'
+      with:
+        channel-id: "${{ inputs.slack_channel_id }}"
+        payload: |
+          {
+            "attachments": [
+              {
+                "color": "${{ inputs.status == 'success' && '#2eb886' || '#a30200' }}",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Repo*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Workflow*\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Status*\n${{ inputs.status == 'success' && 'SUCCESS' || 'FAILED' }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*${{ github.event_name == 'pull_request' && 'Pull Request' || 'Branch' }}*\n${{ github.event_name == 'pull_request' && format('<{0}|{1}>', github.event.pull_request.html_url, github.event.pull_request.title) || format('<https://github.com/{0}/commit/{1}|{2}>', github.repository, github.sha, github.ref_name) }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Event*\n${{ github.event_name }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Actor*\n${{ contains(github.actor, '[bot]') && github.actor || format('<https://github.com/{0}|{0}>', github.actor) }}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "image",
+                        "image_url": "https://github.githubassets.com/favicon.ico",
+                        "alt_text": "GitHub"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "<!date^${{ steps.timestamp.outputs.timestamp }}^{date_pretty} at {time}|${{ steps.timestamp.outputs.timestamp }}>"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+      env:
+        SLACK_BOT_TOKEN: "${{ inputs.slack_bot_token }}"

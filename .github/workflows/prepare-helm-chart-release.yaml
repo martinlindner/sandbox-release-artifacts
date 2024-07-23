@@ -26,6 +26,8 @@ jobs:
       - name: Upload artifacts to existing release
         run: |
           gh release upload ${{github.event.release.tag_name}} /tmp/${{github.event.release.tag_name}}-renamed.zip /tmp/${{github.event.release.tag_name}}-renamed.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Dump GitHub context
         env:

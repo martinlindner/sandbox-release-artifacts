@@ -18,10 +18,10 @@ jobs:
         run: mv .github .github-enthought
 
       - name: Create .zip archive
-        run: zip -r source_code.zip .
+        run: zip -r /tmp/source_code.zip . -x ".git/*"
 
       - name: Create .tar.gz archive
-        run: tar -czvf source_code.tar.gz .
+        run: tar -czvf /tmp/source_code.tar.gz . --exclude='.git'
 
       - name: Dump GitHub context
         env:

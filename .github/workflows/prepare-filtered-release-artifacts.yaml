@@ -24,7 +24,7 @@ jobs:
   
       - name: Archive the repository
         working-directory: ${{github.repository}}
-        run: git archive -o ${{env.PREFIX}}-${{github.event.release.tag_name}}.zip HEAD
+        run: git archive -o ../${{env.PREFIX}}-${{github.event.release.tag_name}}.zip HEAD
 
       - name: Check out the repository wiki (shallow clone)
         uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
 
       - name: Archive the repository wiki
         working-directory: ${{github.repository}}.wiki
-        run: git archive -o ${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip HEAD
+        run: git archive -o ../${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip HEAD
   
       - name: Upload artifacts to existing release
         run: |

@@ -16,14 +16,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: ${{github.repository}}
 
       - name: Rename .github directory
-        working-directory: ${{github.repository}}
         run: mv .github .github-sandbox
   
       - name: Archive the repository
-        working-directory: ${{github.repository}}
         run: git archive -o ${{env.PREFIX}}-${{github.event.release.tag_name}}.zip HEAD
 
       - name: Check out the repository wiki (shallow clone)
@@ -35,10 +32,10 @@ jobs:
 
       - name: Archive the repository wiki
         working-directory: ${{github.repository}}.wiki
-        run: git archive -o ${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip HEAD
+        run: git archive -o ../../${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip HEAD
   
       - name: Upload artifacts to existing release
-        run: gh release upload ${{github.event.release.tag_name}} ${{github.repository}}/${{env.PREFIX}}-${{github.event.release.tag_name}}.zip ${{github.repository}}.wiki/${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip
+        run: gh release upload ${{github.event.release.tag_name}} ${{env.PREFIX}}-${{github.event.release.tag_name}}.zip ${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

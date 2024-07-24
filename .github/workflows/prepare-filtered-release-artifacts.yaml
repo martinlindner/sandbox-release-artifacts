@@ -12,10 +12,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Debug
-        run: |
-          pwd
-
       - name: Check out the repository (shallow clone)
         uses: actions/checkout@v4
         with:
@@ -24,15 +20,11 @@ jobs:
 
       - name: Rename .github directory
         working-directory: ${{github.repository}}
-        run: |
-          pwd
-          mv .github .github-sandbox
+        run: mv .github .github-sandbox
   
       - name: Archive the repository
         working-directory: ${{github.repository}}
-        run: |
-          pwd
-          git archive -o ../${{env.PREFIX}}-${{github.event.release.tag_name}}.zip HEAD
+        run: git archive -o ${{env.PREFIX}}-${{github.event.release.tag_name}}.zip HEAD
 
       - name: Check out the repository wiki (shallow clone)
         uses: actions/checkout@v4
@@ -43,15 +35,10 @@ jobs:
 
       - name: Archive the repository wiki
         working-directory: ${{github.repository}}.wiki
-        run: |
-          pwd
-          git archive -o ../${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip HEAD
+        run: git archive -o ${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip HEAD
   
       - name: Upload artifacts to existing release
-        run: |
-          pwd
-          find
-          gh release upload ${{github.event.release.tag_name}} ${{env.PREFIX}}-${{github.event.release.tag_name}}.zip ${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip
+        run: gh release upload ${{github.event.release.tag_name}} ${{github.repository}}/${{env.PREFIX}}-${{github.event.release.tag_name}}.zip ${{github.repository}}.wiki/${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

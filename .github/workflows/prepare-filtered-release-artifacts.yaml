@@ -39,6 +39,7 @@ jobs:
   
       - name: Upload artifacts to existing release
         run: |
+          find
           gh release upload ${{github.event.release.tag_name}} ${{env.PREFIX}}-${{github.event.release.tag_name}}.zip ${{env.PREFIX}}-${{github.event.release.tag_name}}-wiki.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
